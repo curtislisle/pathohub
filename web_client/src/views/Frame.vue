@@ -8,6 +8,7 @@ import Navbar from '@/components/Navbar.vue';
 import ControlPanel from '@/components/ControlPanel.vue';
 import ExperimentsView from '@/components/ExperimentsView.vue';
 import VtkViewer from '@/components/VtkViewer.vue';
+import PathologyViewer from '@/components/PathologyViewer.vue'
 import formatSize from '@/utils/helper';
 
 export default {
@@ -17,6 +18,7 @@ export default {
     ExperimentsView,
     VtkViewer,
     ControlPanel,
+    PathologyViewer,
   },
   inject: ['user'],
   async beforeRouteUpdate(to, from, next) {
@@ -36,6 +38,7 @@ export default {
     return {
       downloadLoaded: 0,
       downloadTotal: 0,
+      radiologyView: true,   // set to true for VTK views, false for  iFrame
     };
   },
   computed: {
@@ -177,14 +180,19 @@ export default {
     </v-layout>
     <template v-if="currentFrame">
       <v-flex class="layout-container">
-        <div class="my-layout">
-          <div
-            v-for="(vtkView, index) in vtkViews"
-            :key="index"
-            class="view"
-          >
-            <VtkViewer :view="vtkView" />
+        <div v-if="radiologyView" class="my-layout">
+            <div
+              v-for="(vtkView, index) in vtkViews"
+              :key="index"
+              class="view"
+            >
+              <VtkViewer :view="vtkView" />
+            </div>
           </div>
+        <div v-else>
+            <!-- <iframe id="ifrm" src="http://localhost:3000/P-0014157-475886.dzi" width="1600" height="500"></iframe> -->
+            <PathologyViewer>
+            </PathologyViewer>
         </div>
         <v-layout
           v-if="errorLoadingFrame"
